@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  attacker:
+    build: ./attacker
+    cap_add:
+      - NET_ADMIN
+    networks:
+      arp_spoofing_network:
+        ipv4_address: 172.18.0.3
+    volumes:
+      - ./shared-volume:/home/shared-volume
+
+  victim:
+    build: ./victim
+    cap_add:
+      - NET_ADMIN
+    networks:
+      arp_spoofing_network:
+        ipv4_address: 172.18.0.2
+    volumes:
+      - ./shared-volume:/home/shared-volume2
+
+  ftpserver:
+    build: ./ftpserver
+    ports:
+      - "21:21"
+    networks:
+      arp_spoofing_network:
+        ipv4_address: 172.18.0.4
+    volumes:
+      - ./shared-volume:/home/shared-volume3
+
+networks:
+  arp_spoofing_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16

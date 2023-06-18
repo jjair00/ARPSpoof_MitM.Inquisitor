@@ -1,0 +1,32 @@
+FROM stilliard/pure-ftpd
+
+# RUN apt update && apt install arping
+RUN apt update && apt install -y bash arp-scan
+RUN apt install tcpdump
+RUN mkdir -p /home/ftpusers/jcueto-r
+
+# ENV FTP_PASS contraseña
+# RUN printf "contrasena\ncontrasena\n" | pure-pw useradd -m jcueto-r -u ftpuser -d /home/ftpusers/jcueto-r
+# RUN printf "%s\n" "contrasena" "contrasena" | pure-pw useradd jcueto-r -u ftpuser -d /home/ftpusers/jcueto-r -m --stdin
+RUN echo "contrasena\ncontrasena" | pure-pw useradd jcueto-r -u ftpuser -d /home/ftpusers/jcueto-r -m
+ 
+# RUN pure-pw mkdb
+
+RUN echo "yes" > /etc/pure-ftpd/conf/ChrootEveryone && \
+    echo "yes" > /etc/pure-ftpd/conf/NoAnonymous && \
+    echo "yes" > /etc/pure-ftpd/conf/PAMAuthentication && \
+    echo "50" > /etc/pure-ftpd/conf/MaxClientsNumber && \
+    echo "10" > /etc/pure-ftpd/conf/MaxClientsPerIP \
+    echo "0.0.0.0" > /etc/pure-ftpd/conf/Bind
+RUN sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/pure-ftpd/conf/Bind
+RUN echo "172.18.0.4" > /etc/pure-ftpd/conf/ForcePassiveIP
+RUN echo "yes" > /etc/pure-ftpd/conf/UnixAuthentication
+# RUN service pure-ftpd restart
+
+
+
+
+EXPOSE 21
+
+CMD /usr/sbin/pure-ftpd -c 50 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R
+

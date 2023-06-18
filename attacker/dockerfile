@@ -1,0 +1,26 @@
+FROM python:latest
+RUN apt update
+    # apk add --no-cache python3 py3-pip && \
+    # python3 -m ensurepip && \
+    # rm -r /usr/lib/python*/ensurepip && \
+    # pip3 install --upgrade pip setuptools && \
+    # if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+    # if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    # rm -r /root/.cache
+
+RUN apt install bash 
+RUN apt install sudo
+RUN apt install arp-scan -y
+RUN apt install vim -y
+RUN apt install libpcap-dev -y
+RUN apt install net-tools
+RUN pip install scapy
+RUN apt install tcpdump
+
+COPY scan.py /home
+COPY portdevices_scan.py /home
+COPY iinquisitor.py /home
+# RUN mkdir -p /home/shared-volume
+# VOLUME /home/shared-volume
+# CMD ["sleep", "infinity", "bash"]
+ENTRYPOINT ["tail","-f","/dev/random"]
